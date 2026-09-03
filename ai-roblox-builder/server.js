@@ -35,7 +35,7 @@ app.post("/generate", async (req, res) => {
           "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-120b",
           temperature: 0.2,
           max_completion_tokens: 6000,
           messages: [
