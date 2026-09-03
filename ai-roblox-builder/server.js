@@ -2,31 +2,29 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("AI Roblox Builder is running!");
-});
+// Serve the website
+app.use(express.static("public"));
 
+// AI generation endpoint
 app.post("/generate", async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt) {
     return res.status(400).json({
-      error: "Please describe the Roblox game you want to build."
+      error: "Please describe your Roblox game."
     });
   }
 
-  // AI generation will be connected here next.
   res.json({
-    message: "Your Roblox game request was received!",
+    message: "Game request received!",
     prompt: prompt
   });
 });
-
-const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`AI Roblox Builder running on port ${PORT}`);
