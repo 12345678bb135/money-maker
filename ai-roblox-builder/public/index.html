@@ -40,6 +40,7 @@
       background: #1f2937;
       color: white;
       font-size: 16px;
+      resize: vertical;
     }
 
     button {
@@ -58,6 +59,16 @@
       background: #1d4ed8;
     }
 
+    #copyButton {
+      display: none;
+      margin: 10px auto;
+      background: #059669;
+    }
+
+    #copyButton:hover {
+      background: #047857;
+    }
+
     #result {
       margin-top: 30px;
       padding: 20px;
@@ -66,6 +77,7 @@
       white-space: pre-wrap;
       overflow-x: auto;
       min-height: 150px;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -80,10 +92,12 @@
 
   <textarea
     id="prompt"
-    placeholder="Example: Make a police roleplay game with police, sheriff and civilian teams."
+    placeholder="Example: Build me a realistic police roleplay game..."
   ></textarea>
 
-  <button onclick="generateGame()">Generate Game</button>
+  <button onclick="generateGame()">🚀 Generate Game</button>
+
+  <button id="copyButton" onclick="copyCode()">📋 Copy Generated Code</button>
 
   <div id="result">Your AI-generated Roblox code will appear here.</div>
 
@@ -91,10 +105,15 @@
 
 <script>
 
+let generatedCode = "";
+
 async function generateGame() {
 
   const prompt = document.getElementById("prompt").value.trim();
   const result = document.getElementById("result");
+  const copyButton = document.getElementById("copyButton");
+
+  copyButton.style.display = "none";
 
   if (!prompt) {
     result.textContent = "Please describe your game first.";
@@ -117,28 +136,55 @@ async function generateGame() {
 
     const data = await response.json();
 
-    console.log("SERVER RESPONSE:", data);
-
     if (!response.ok) {
       result.textContent = "❌ " + (data.error || "Server error");
       return;
     }
 
     if (data.result) {
-      result.textContent = data.result;
+
+      generatedCode = data.result;
+
+      result.textContent = generatedCode;
+
+      copyButton.style.display = "block";
+
     } else {
+
       result.textContent =
-        "❌ The server responded, but no AI result was returned.\n\n" +
+        "❌ No AI result was returned.\n\n" +
         JSON.stringify(data, null, 2);
     }
 
   } catch (error) {
 
-    console.error(error);
-
     result.textContent =
       "❌ Could not connect to the server.\n\n" +
       error.message;
+  }
+}
+
+async function copyCode() {
+
+  if (!generatedCode) {
+    return;
+  }
+
+  try {
+
+    await navigator.clipboard.writeText(generatedCode);
+
+    const button = document.getElementById("copyButton");
+
+    button.textContent = "✅ Copied!";
+
+    setTimeout(() => {
+      button.textContent = "📋 Copy Generated Code";
+    }, 2000);
+
+  } catch (error) {
+
+    alert("Could not copy the code.");
   }
 }
 
