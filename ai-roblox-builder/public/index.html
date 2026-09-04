@@ -99,6 +99,10 @@
 
   <button id="copyButton" onclick="copyCode()">📋 Copy Generated Code</button>
 
+  <button id="downloadButton" onclick="downloadCode()" style="display:none; background:#7c3aed;">
+    💾 Download .lua
+  </button>
+
   <div id="result">Your AI-generated Roblox code will appear here.</div>
 
 </div>
@@ -148,6 +152,7 @@ async function generateGame() {
       result.textContent = generatedCode;
 
       copyButton.style.display = "block";
+      document.getElementById("downloadButton").style.display = "block";
 
     } else {
 
@@ -162,6 +167,29 @@ async function generateGame() {
       "❌ Could not connect to the server.\n\n" +
       error.message;
   }
+}
+
+function downloadCode() {
+
+  if (!generatedCode) {
+    return;
+  }
+
+  const blob = new Blob([generatedCode], {
+    type: "text/plain"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "RobloxGeneratedScript.lua";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
 }
 
 async function copyCode() {
