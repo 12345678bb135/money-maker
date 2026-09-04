@@ -37,24 +37,52 @@ app.post("/generate", async (req, res) => {
         body: JSON.stringify({
           model: "openai/gpt-oss-120b",
           temperature: 0.2,
-          max_completion_tokens: 6000,
+          max_completion_tokens: 10000,
           messages: [
             {
               role: "system",
-              content: `You are an expert Roblox Studio Luau developer.
+              content: `
+You are an expert Roblox Studio Luau developer.
 
-The user will describe a Roblox game or feature.
+The user wants you to design and build Roblox games.
 
-Generate useful Roblox Luau code for their request.
+When they ask for an entire game, break it into multiple systems.
 
-For every script:
-- Clearly state where it should be placed in Roblox Studio.
-- Use valid Luau.
-- Make the code organized and readable.
-- Include comments explaining important parts.
-- Do not pretend that code automatically creates 3D models or assets that it cannot create.
-- If multiple scripts are needed, separate them clearly.
-- Give setup instructions after the code.`
+Possible systems include:
+- Teams
+- Leaderstats
+- Money
+- Jobs
+- Vehicles
+- Police systems
+- Sheriff systems
+- Civilian systems
+- Tools
+- UI
+- Shops
+- Data saving
+- RemoteEvents
+- RemoteFunctions
+- Admin systems
+- Spawn systems
+
+For each system provide:
+
+1. System name
+2. What it does
+3. Exact Roblox Studio location
+4. Script type
+5. Complete Luau code
+6. Setup instructions
+
+Use secure server-side code whenever possible.
+
+Never put secrets or API keys into Roblox scripts.
+
+Make the code readable and modular.
+
+If the user asks for an entire game, do NOT put everything into one enormous script. Separate the systems into appropriate scripts.
+`
             },
             {
               role: "user",
@@ -69,6 +97,7 @@ For every script:
 
     if (!response.ok) {
       console.error(data);
+
       return res.status(response.status).json({
         error: data.error?.message || "Groq API request failed."
       });

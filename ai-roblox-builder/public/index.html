@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Roblox Builder</title>
+
   <style>
     body {
       margin: 0;
@@ -14,39 +15,38 @@
 
     .container {
       max-width: 900px;
-      margin: 80px auto;
+      margin: 60px auto;
       padding: 20px;
-      text-align: center;
     }
 
     h1 {
+      text-align: center;
       font-size: 48px;
-      margin-bottom: 10px;
     }
 
     p {
+      text-align: center;
       color: #9ca3af;
-      font-size: 18px;
     }
 
     textarea {
       width: 100%;
       height: 180px;
-      margin-top: 30px;
-      padding: 18px;
       box-sizing: border-box;
+      padding: 18px;
+      margin-top: 25px;
       border-radius: 12px;
       border: 1px solid #374151;
       background: #1f2937;
       color: white;
       font-size: 16px;
-      resize: vertical;
     }
 
     button {
-      margin-top: 20px;
+      display: block;
+      margin: 20px auto;
       padding: 15px 30px;
-      border: none;
+      border: 0;
       border-radius: 10px;
       background: #2563eb;
       color: white;
@@ -61,64 +61,88 @@
     #result {
       margin-top: 30px;
       padding: 20px;
-      text-align: left;
       background: #1f2937;
       border-radius: 12px;
       white-space: pre-wrap;
-      min-height: 100px;
+      overflow-x: auto;
+      min-height: 150px;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>🎮 AI Roblox Builder</h1>
 
-    <p>Describe the Roblox game you want to create.</p>
+<div class="container">
 
-    <textarea id="prompt"
-      placeholder="Example: Make me a realistic police roleplay game with police, sheriff, civilian teams, cars, jobs, money and a leaderboard."></textarea>
+  <h1>🎮 AI Roblox Builder</h1>
 
-    <br>
+  <p>Describe the Roblox game you want to build.</p>
 
-    <button onclick="generateGame()">Generate Game</button>
+  <textarea
+    id="prompt"
+    placeholder="Example: Make a police roleplay game with police, sheriff and civilian teams."
+  ></textarea>
 
-    <div id="result">
-      Your generated Roblox code will appear here.
-    </div>
-  </div>
+  <button onclick="generateGame()">Generate Game</button>
 
-  <script>
-    async function generateGame() {
-      const prompt = document.getElementById("prompt").value;
-      const result = document.getElementById("result");
+  <div id="result">Your AI-generated Roblox code will appear here.</div>
 
-      if (!prompt.trim()) {
-        result.textContent = "Please describe your game first.";
-        return;
-      }
+</div>
 
-      result.textContent = "🤖 Building your Roblox game...";
+<script>
 
-      try {
-        const response = await fetch("/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ prompt })
-        });
+async function generateGame() {
 
-        const data = await response.json();
+  const prompt = document.getElementById("prompt").value.trim();
+  const result = document.getElementById("result");
 
-        result.textContent = data.error
-          ? data.error
-          : "Request received!\\n\\n" + data.prompt;
+  if (!prompt) {
+    result.textContent = "Please describe your game first.";
+    return;
+  }
 
-      } catch (error) {
-        result.textContent = "Something went wrong. Please try again.";
-      }
+  result.textContent = "🤖 AI is building your Roblox game...";
+
+  try {
+
+    const response = await fetch("/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt: prompt
+      })
+    });
+
+    const data = await response.json();
+
+    console.log("SERVER RESPONSE:", data);
+
+    if (!response.ok) {
+      result.textContent = "❌ " + (data.error || "Server error");
+      return;
     }
-  </script>
+
+    if (data.result) {
+      result.textContent = data.result;
+    } else {
+      result.textContent =
+        "❌ The server responded, but no AI result was returned.\n\n" +
+        JSON.stringify(data, null, 2);
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    result.textContent =
+      "❌ Could not connect to the server.\n\n" +
+      error.message;
+  }
+}
+
+</script>
+
 </body>
 </html>
